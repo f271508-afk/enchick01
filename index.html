@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>驗屋查核工具｜通用版</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f6f4;--card:#fff;--ink:#17262b;--mut:#5d6f74;--line:#d6e0dd;--pri:#1f5aa8;--teal:#3fa9b5;--ok:#2f8f5b;--warn:#c98a12;--bad:#c2412f;--tint:#e6f0fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a1e;--card:#172429;--ink:#e6eff0;--mut:#93a8ad;--line:#2a3c42;--pri:#6fa8ee;--teal:#56c0cc;--ok:#52c283;--warn:#e0a93a;--bad:#e8725f;--tint:#1c3040}}
+:root[data-theme="dark"]{--bg:#0f1a1e;--card:#172429;--ink:#e6eff0;--mut:#93a8ad;--line:#2a3c42;--pri:#6fa8ee;--teal:#56c0cc;--ok:#52c283;--warn:#e0a93a;--bad:#e8725f;--tint:#1c3040}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+header{background:var(--pri);color:#fff;border-radius:14px;padding:16px 20px;margin-bottom:12px}
+header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:13px;opacity:.9}
+nav{display:flex;gap:6px;overflow-x:auto;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:6px 0;z-index:5;margin-bottom:8px}
+nav button{flex:1 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;border-radius:999px;font:inherit;cursor:pointer}
+nav button[aria-selected=true]{background:var(--pri);color:#fff;border-color:var(--pri)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card h2{margin:0 0 10px;font-size:16px}.card h3{margin:12px 0 4px;font-size:14px;color:var(--mut)}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+.stat{background:var(--tint);border-radius:10px;padding:10px 12px}.stat b{display:block;font-size:24px;line-height:1.2}.stat span{font-size:13px;color:var(--mut)}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;display:flex}.bar i{display:block;height:100%}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:14px}.row .l{width:84px;flex:none}.row .t{flex:1}.row .n{width:84px;text-align:right;color:var(--mut);font-size:12.5px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+select,input,textarea{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 9px;border-radius:8px;font:inherit}
+.tools input{flex:1;min-width:130px}
+.btn{border:1px solid var(--pri);background:var(--pri);color:#fff;padding:7px 14px;border-radius:8px;font:inherit;cursor:pointer}.btn.g{background:transparent;color:var(--pri)}.btn.r{border-color:var(--bad);color:var(--bad);background:transparent}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 12px;border-radius:8px;font:inherit;cursor:pointer}
+.chips button.on{background:var(--tint);border-color:var(--pri);color:var(--pri);font-weight:700}
+.it{border-bottom:1px solid var(--line);padding:9px 0}.it:last-child{border:0}
+.it .nm{margin-bottom:6px}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--card);color:var(--mut);padding:4px 12px;border-radius:7px;font:inherit;font-size:13px;cursor:pointer}
+.seg .o1.on{background:var(--ok);color:#fff;border-color:var(--ok)}.seg .o2.on{background:var(--bad);color:#fff;border-color:var(--bad)}.seg .o3.on{background:var(--mut);color:#fff;border-color:var(--mut)}.seg .o0.on{background:var(--tint);color:var(--pri);border-color:var(--pri)}
+.det{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.det input{flex:1;min-width:150px}
+.d{border-left:5px solid var(--bad)}.d.s1{border-left-color:var(--warn)}.d.s2{border-left-color:var(--teal)}.d.s3{border-left-color:var(--ok)}
+.tag{font-size:12px;padding:1px 9px;border-radius:999px;background:var(--tint);color:var(--pri);margin-right:4px}
+.f{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:10px}.f label{font-size:13px;color:var(--mut);display:block}.f input,.f select{width:100%}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:600}.scroll{overflow-x:auto}
+.th{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer}
+table.bd th,table.bd td{border:1px solid var(--line)}table.bd input{width:100%}
+.sg{display:flex;gap:16px;margin-top:56px}.sg div{flex:1;border-top:1px solid var(--ink);padding-top:4px;font-size:13px;text-align:center}
+@media print{header,nav,.noprint{display:none!important}body{background:#fff;color:#000}.wrap{padding:0}.card{border:0;padding:0}}
+#tip{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:20}
+.gx th,.gx td{text-align:center;padding:5px}.gx button{border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:64px;font:inherit;cursor:pointer;color:var(--ink);background:var(--card)}
+.gx .c0{background:var(--bg);color:var(--mut)}.gx .c3{background:var(--tint)}.gx .c1{background:rgba(201,138,18,.28)}.gx .c2{background:rgba(47,143,91,.28)}
+.note{font-size:12.5px;color:var(--mut)}.empty{text-align:center;color:var(--mut);padding:24px}
+.warn{color:var(--bad);font-weight:700}.good{color:var(--ok)}
+dialog{max-width:640px;width:92%;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
+dialog textarea{width:100%;height:280px;font:13px/1.5 monospace;background:var(--bg)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>驗屋查核工具</h1><p id="hd"></p></header>
+<nav role="tablist" id="tabs"></nav>
+<main id="view"></main>
+</div>
+<dialog id="dlg"><h2 id="dt" style="margin-top:0"></h2><textarea id="ta"></textarea><p class="note" id="dn"></p>
+<button class="btn" id="imp" style="display:none" onclick="doImport()">匯入</button> <button class="btn g" onclick="dlg.close()">關閉</button></dialog>
+<dialog id="ad"><h3 style="margin-top:0">新增缺失</h3><div class="f"><div><label>戶別</label><select id="au"></select></div><div><label>樓層</label><select id="af"></select></div><div><label>查核日期</label><input type="date" id="ac" onchange="dueFrom()"></div><div><label>改善期限（預設 +7 天）</label><input type="date" id="ao"></div></div><input id="at" placeholder="缺失描述（位置、項目、程度）" style="width:100%;margin-bottom:10px"><div class="tools" style="margin:0"><button class="btn" onclick="saveDef()">新增</button><button class="btn g" onclick="ad.close()">取消</button></div></dialog>
+<dialog id="cf"><p id="cm" style="margin-top:0"></p><input id="ci" style="width:100%;margin-bottom:10px"><div class="tools" style="margin:0"><button class="btn" id="cok">確定</button><button class="btn g" onclick="cf.close()">取消</button></div></dialog>
+<div id="tip" role="status"></div>
+<dialog id="pv"><img id="pi" alt="缺失照片" style="max-width:100%;border-radius:8px"><div class="tools" style="margin-top:8px"><button class="btn r" id="pdl">刪除照片</button><button class="btn g" onclick="pv.close()">關閉</button></div></dialog>
+
+<script>
+// 查核範本：類別|項目|適用區域（A=全部；D客廳 R房間 K廚房 B衛浴 V陽台 O其他）
+const TPL=`牆面|牆壁面油漆裂痕及平整度|A
+牆面|牆壁面漏水水斑評估|A
+牆面|牆壁面油漆粉刷色差|DRK
+牆面|壁面／樑面泥作打底層（敲擊空心）|DRKV
+牆面|樑面整體及轉角平整度|A
+地坪|地磚填縫、色差、缺損、髒污、龜裂、刮痕|A
+地坪|地磚是否空心或隆起|A
+地坪|室內樓地板水平|DRK
+地坪|踢腳板有無及施工品質|DRK
+地坪|木地板有無及施工品質|DRK
+天花|頂板RC面漏水水斑評估|A
+天花|頂板RC面結構裂痕|A
+天花|頂板淨高度|DRK
+天花|照明出線孔位置及數量|A
+天花|消防設備管路位置及控制閥|DRK
+天花|天花板泥作打底層／維修孔開啟|KBV
+天花|排氣管／排油煙管配置及管道間|KBV
+門|門框水平|A
+門|門框外觀完整性（污染、刮傷、漆面）|A
+門|門框四周 silicone 收邊|A
+門|門片主體完整性|A
+門|門把|A
+門|門縫離地高度|RB
+門|門框密合度及施工品質|A
+門|門檻外觀及水平|DBV
+門|大門防火防爆標章、門弓器、防火膠條|D
+窗|窗框水平|DR
+窗|窗框外觀及完整性|DR
+窗|窗片玻璃整潔|DR
+窗|窗框四周 silicone 收邊|DR
+窗|窗片及框密合度、紗窗|DR
+窗|窗框噴水測試（滲漏、含水率）|DR
+電|插座電壓|A
+電|插座接線是否正確|A
+電|插座數量、位置、高度|A
+電|開關功能與迴路通電|A
+電|漏電斷路器功能|DKBV
+電|緊急按鈕|DRKB
+電|電迴路圖核對／電箱組裝完整性|D
+電|弱電箱：網路、電話、電視訊號|DR
+水|冷氣排水測試|DRK
+水|排水孔內視鏡檢測（有無淤積）|BV
+水|地面排水與洩水坡方向|BV
+水|地板止滑性|BV
+水|水龍頭出水測試|KBV
+廚衛|廚房檯面與水槽外觀|K
+廚衛|櫥櫃體、門片、抽屜操作|K
+廚衛|抽油煙機、爐具、烘碗機外觀及功能|K
+廚衛|廚房有無消防測溫器／瓦斯測報器|K
+廚衛|水槽排水及溢流口|K
+廚衛|馬桶外觀、支撐度、沖水測試|B
+廚衛|面盆外觀、排水及溢流口|B
+廚衛|淋浴拉門密合度及噴水測試|B
+廚衛|暖風機或抽風機功能|B
+廚衛|鏡櫃外觀、水平及操作|B
+廚衛|衛浴壁面磁磚（空心、填縫、破損）|BKV
+廚衛|乾區門檻處有無滲漏水|B
+陽台|曬衣架外觀及操作|V
+陽台|欄杆外觀及穩固性|V
+陽台|照明燈具防水罩、插座防水蓋板|V
+陽台|洗衣機排水測試|V`.split("\n").map((l,i)=>{const p=l.split("|");return{k:"t"+i,cat:p[0],name:p[1],tags:p[2]}});
+const TY={D:"客廳",R:"房間",K:"廚房",B:"衛浴",V:"陽台",O:"其他"};
+const DEF=[["客廳","D"],["主臥","R"],["次臥","R"],["廚房","K"],["衛浴","B"],["陽台","V"]];
+const RS=["未查","無異常","缺失","不適用"],ST=["待修繕","修繕中","已修復","複驗通過"],SC=["var(--bad)","var(--warn)","var(--teal)","var(--ok)"];
+const KEY="inspect-tool-v2";
+// 照片存 IndexedDB，記憶體快取 P
+let db=null;const P={};
+function initDB(cb){try{const r=indexedDB.open("inspect-photos",1);r.onupgradeneeded=()=>r.result.createObjectStore("p");r.onerror=()=>cb();r.onsuccess=()=>{db=r.result;const c=db.transaction("p").objectStore("p").openCursor();c.onsuccess=e=>{const x=e.target.result;if(x){P[x.key]=x.value;x.continue()}else cb()};c.onerror=()=>cb()}}catch(e){cb()}}
+const idbPut=(id,v)=>{try{db&&db.transaction("p","readwrite").objectStore("p").put(v,id)}catch(e){}};
+const idbDel=id=>{try{db&&db.transaction("p","readwrite").objectStore("p").delete(id)}catch(e){}};
+const $=id=>document.getElementById(id);
+function ask(msg,cb,inp){$("cm").textContent=msg;const i=$("ci");i.style.display=inp?"":"none";i.value="";$("cok").onclick=()=>{const v=i.value.trim();if(inp&&!v)return;cf.close();cb(v)};cf.showModal();if(inp)i.focus()}
+function tip(m){const t=$("tip");t.textContent=m;t.style.display="block";clearTimeout(tip.t);tip.t=setTimeout(()=>t.style.display="none",3500)}
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let S=null;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.cases)S={cur:null,cases:{}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+function newCase(){const id="c"+Date.now();S.cases[id]={id,info:{unit:"",floor:""},areas:DEF.map((a,i)=>({id:"a"+i,name:a[0],type:a[1]})),res:{},cust:[],vendors:[]};S.cur=id;save()}
+if(!S.cur||!S.cases[S.cur]){S.cur=Object.keys(S.cases)[0]||null;if(!S.cur)newCase()}
+Object.values(S.cases).forEach(c=>{c.vendors=c.vendors||[];c.sheets=c.sheets||{};c.info.unit=c.info.unit??c.info.addr??"";c.info.floor=c.info.floor??""});
+const C=()=>S.cases[S.cur];
+let tab="sum",ca=null,F={a:"",s:"",v:"",u:"",f:"",dl:""};
+
+const applies=(t,a)=>t.tags==="A"||t.tags.includes(a.type);
+const items0=a=>TPL.filter(t=>applies(t,a)&&!(C().hid||{})[a.id+"|"+t.k]).concat(C().cust.filter(x=>x.area===a.id).map(x=>({k:x.id,cat:x.cat,name:x.name})));
+const items=a=>(C().items&&C().items[a.id])||items0(a);
+const get=(a,k)=>C().res[a+"|"+k]||{r:0,t:"",s:0,n:""};
+function put(a,k,o){C().res[a+"|"+k]=Object.assign(get(a,k),o);save()}
+function stats(){const D=defects(),n=D.length;return{tot:n,done:D.filter(d=>(d.g.s||0)===3).length,bad:n,na:0,per:[]}}
+function defects(){const L=[];Object.keys(C().res).forEach(k=>{if(k.slice(0,2)!=="d|")return;const g=C().res[k];if(g.r===2)L.push({a:{id:"d",name:""},i:{k:k.slice(2),cat:"",name:""},g,u:g.u!==undefined?g.u:(C().info.unit||""),f:g.f!==undefined?g.f:(C().info.floor||"")})});return L}
+function migrate(c){if(c.mig)return;withCase(c.id,()=>{(c.areas||[]).forEach(a=>items(a).forEach(it=>{const g=c.res[a.id+"|"+it.k];if(g&&g.r===2)c.res["d|m"+a.id+it.k]=Object.assign({},g,{t:`[${a.name}] ${it.name}${g.t?"："+g.t:""}`})}))});c.mig=1;save()}
+
+const TABS=[["sum","總覽"],["def","缺失"],["sheet","缺失單"],["agg","彙整"],["case","案件"]];
+function nav(){$("tabs").innerHTML=TABS.map(t=>`<button role="tab" aria-selected="${tab===t[0]}" onclick="tab='${t[0]}';render()">${t[1]}</button>`).join("");
+  const i=C().info;$("hd").textContent=[i.unit,fl(i.floor||"")].filter(Boolean).join(" ")||"尚未填寫戶別／樓層，請至「案件」分頁"}
+
+function sum(){const D=defects(),c=[0,0,0,0];D.forEach(d=>c[d.g.s||0]++);const n=D.length;
+  return `<div class="card"><h2>缺失處理進度</h2><div class="grid"><div class="stat"><b>${n}</b><span>缺失總數</span></div><div class="stat"><b style="color:var(--bad)">${c[0]}</b><span>待修繕</span></div><div class="stat"><b style="color:var(--warn)">${c[1]+c[2]}</b><span>修繕中／已修復待複驗</span></div><div class="stat"><b style="color:var(--ok)">${n?Math.round(c[3]/n*100):0}%</b><span>複驗通過 ${c[3]}/${n}</span></div><div class="stat" style="cursor:pointer" onclick="F.dl='over';tab='def';render()"><b style="color:var(--bad)">${D.filter(od).length}</b><span>逾期</span></div><div class="stat" style="cursor:pointer" onclick="F.dl='soon';tab='def';render()"><b style="color:var(--warn)">${D.filter(soon).length}</b><span>即將到期（${SD()} 天內）</span></div></div>
+  ${n?`<div class="bar" style="margin-top:12px">${c.map((v,i)=>`<i style="width:${v/n*100}%;background:${SC[i]}"></i>`).join("")}</div><p class="note">${ST.map((x,i)=>`<span style="color:${SC[i]}">■</span> ${x} ${c[i]}`).join("　")}</p>`:`<p class="note">尚無缺失，請到「缺失」分頁新增。</p>`}</div>`}
+function vn(id){const v=C().vendors.find(x=>x.id===id);return v?(v.name||"未命名廠商")+(v.trade?"（"+v.trade+"）":""):""}
+function media(a,k,g){const id="f"+a+k;
+  return `<div class="det"><select aria-label="責任廠商" onchange="put('${a}','${k}',{v:this.value});render()"><option value="">責任廠商：未指派</option>${C().vendors.map(v=>`<option value="${v.id}" ${g.v===v.id?"selected":""}>${esc(vn(v.id))}</option>`).join("")}</select>
+  <button class="btn g" onclick="$('${id}').click()">＋缺失照片</button><input type="file" id="${id}" accept="image/*" multiple hidden onchange="addPh('${a}','${k}',this.files)"></div>
+  ${(g.p||[]).length?`<div class="det">${g.p.map(p=>P[p]?`<img class="th" alt="缺失照片" src="${P[p]}" onclick="viewP('${a}','${k}','${p}')">`:"").join("")}</div>`:""}`}
+function addPh(a,k,files){const fs=[...files];let n=fs.length;if(!n)return;
+  if(!db&&!window.__w){window.__w=1;tip("此環境無法永久保存照片，重新整理後照片會消失。")}
+  fs.forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onerror=()=>{if(!--n)render()};im.onload=()=>{const s=Math.min(1,1024/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+    const u=c.toDataURL("image/jpeg",.7),id="p"+Date.now()+Math.random().toString(36).slice(2,6);P[id]=u;idbPut(id,u);put(a,k,{p:(get(a,k).p||[]).concat(id)});if(!--n)render()};im.src=r.result};r.readAsDataURL(f)})}
+function viewP(a,k,p){$("pi").src=P[p];$("pdl").onclick=()=>{pv.close();ask("刪除這張照片？",()=>{put(a,k,{p:get(a,k).p.filter(x=>x!==p)});delete P[p];idbDel(p);render()})};pv.showModal()}
+
+function def(){const V=C().vendors,D=defects().filter(d=>(F.s===""||(d.g.s||0)==F.s)&&(!F.v||(F.v==="-"?!d.g.v:d.g.v===F.v))&&(!F.u||(F.u==="-"?!d.u:d.u===F.u))&&(!F.f||(F.f==="-"?!d.f:d.f===F.f))&&(!F.dl||(F.dl==="over"?od(d):soon(d))));
+  return `<div class="tools"><button class="btn" onclick="addDef()">＋新增缺失</button><select onchange="F.s=this.value;render()"><option value="">全部狀態</option>${ST.map((s,i)=>`<option value="${i}" ${String(F.s)===String(i)?"selected":""}>${s}</option>`).join("")}</select>
+  <select onchange="F.v=this.value;render()"><option value="">全部廠商</option><option value="-" ${F.v==="-"?"selected":""}>未指派</option>${V.map(v=>`<option value="${v.id}" ${F.v===v.id?"selected":""}>${esc(vn(v.id))}</option>`).join("")}</select></div>
+  <div class="tools"><select aria-label="戶別篩選" onchange="F.u=this.value;render()">${lopts("units",F.u,"全部戶別")}</select><select aria-label="樓層篩選" onchange="F.f=this.value;render()">${lopts("floors",F.f,"全部樓層")}</select><select aria-label="期限篩選" onchange="F.dl=this.value;render()"><option value="">期限：全部</option><option value="over" ${F.dl==="over"?"selected":""}>逾期</option><option value="soon" ${F.dl==="soon"?"selected":""}>即將到期（${SD()} 天內）</option></select></div>
+  <div class="tools"><button class="btn g" onclick="exportTxt('a')">複驗清單</button><button class="btn g" onclick="exportTxt('v')">廠商派工單</button></div>
+  <p class="note">共 ${D.length} 筆。</p>
+  ${D.map(d=>`<div class="card d s${d.g.s||0}"><span class="tag">${esc(locL(d)||"未選擇戶別／樓層")}</span>${od(d)?`<span class="tag" style="background:var(--bad);color:#fff">逾期</span>`:""}${soon(d)?`<span class="tag" style="background:var(--warn);color:#fff">即將到期</span>`:""}${d.g.v?`<span class="tag">${esc(vn(d.g.v))}</span>`:""}
+  <div class="det"><input aria-label="缺失描述" placeholder="缺失描述（位置、項目、程度）" value="${esc(d.g.t)}" onchange="put('d','${d.i.k}',{t:this.value})"></div>
+  <div class="det"><select aria-label="戶別" onchange="put('d','${d.i.k}',{u:this.value});render()">${lopts("units",d.u)}</select><select aria-label="樓層" onchange="put('d','${d.i.k}',{f:this.value});render()">${lopts("floors",d.f)}</select></div>
+  <div class="det"><label class="note" style="align-self:center">查核日期</label><input type="date" style="flex:0 0 150px;min-width:0" value="${esc(d.g.cd)}" onchange="put('d','${d.i.k}',{cd:this.value})"><label class="note" style="align-self:center">改善期限</label><input type="date" style="flex:0 0 150px;min-width:0" value="${esc(d.g.due)}" onchange="put('d','${d.i.k}',{due:this.value});render()"></div>
+  <div class="det"><select aria-label="處理狀態" onchange="put('d','${d.i.k}',{s:+this.value});render()">${ST.map((s,i)=>`<option value="${i}" ${(d.g.s||0)===i?"selected":""}>${s}</option>`).join("")}</select>
+  <input placeholder="備註（修繕日期、廠商回覆…）" value="${esc(d.g.n)}" onchange="put('d','${d.i.k}',{n:this.value})"><button class="btn r" onclick="delDef('${d.i.k}')">刪除</button></div>${media("d",d.i.k,d.g)}</div>`).join("")||`<div class="empty">尚無缺失，按「＋新增缺失」開始記錄</div>`}`}
+const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const plusN=(v,n)=>{const t=new Date(v+"T00:00:00");t.setDate(t.getDate()+n);return ymd(t)};
+const plus7=v=>plusN(v,7);
+const od=d=>d.g.due&&d.g.due<ymd(new Date())&&(d.g.s||0)<3;
+const SD=()=>{const n=parseInt(S.soonDays);return n>=1&&n<=60?n:2};
+function setSD(v){const n=parseInt(v);if(!(n>=1&&n<=60))return tip("請輸入 1–60 天");S.soonDays=n;save();render()}
+const soon=d=>{if(!d.g.due||(d.g.s||0)>=3)return false;const t=ymd(new Date());return d.g.due>=t&&d.g.due<=plusN(t,SD())};
+function dueFrom(){const v=$("ac").value;if(v)$("ao").value=plus7(v)}
+const locL=d=>[d.u,fl(d.f||"")].filter(Boolean).join(" ");
+function lopts(L,sel,all){return (all?`<option value="">${all}</option><option value="-" ${sel==="-"?"selected":""}>未選擇</option>`:`<option value="">未選擇</option>`)+S[L].map(x=>`<option value="${esc(x)}" ${sel===x?"selected":""}>${esc(L==="floors"?fl(x):x)}</option>`).join("")}
+function addDef(){const i=C().info;$("au").innerHTML=lopts("units",i.unit);$("af").innerHTML=lopts("floors",i.floor);$("at").value="";$("ac").value=ymd(new Date());dueFrom();ad.showModal();$("at").focus()}
+function saveDef(){const t=$("at").value.trim();if(!t)return tip("請填缺失描述");put("d","n"+Date.now(),{r:2,t,s:0,u:$("au").value,f:$("af").value,cd:$("ac").value,due:$("ao").value});ad.close();render()}
+function delDef(k){ask("刪除這筆缺失？",()=>{delete C().res["d|"+k];save();render()})}
+function show(title,text,note,imp){$("dt").textContent=title;$("ta").value=text;$("ta").readOnly=!imp;$("dn").textContent=note;$("imp").style.display=imp?"":"none";$("dlg").showModal();if(!imp)$("ta").select()}
+function exportTxt(m){const i=C().info,D=defects().filter(d=>(d.g.s||0)<3),line=d=>`${locL(d)?"["+locL(d)+"] ":""}${d.g.t||"—"}${d.g.due?"〔期限 "+d.g.due+(od(d)?" 逾期":soon(d)?" 即將到期":"")+"〕":""}［${ST[d.g.s||0]}］${d.g.n?"（"+d.g.n+"）":""}${(d.g.p||[]).length?"［照片"+d.g.p.length+"張］":""}`;
+  let t=`【${m==="v"?"廠商派工單":"缺失／複驗清單"}】${cname(C())}\n尚未通過複驗：${D.length} 項\n`;
+  if(m==="v"){[...C().vendors.map(v=>v.id),""].forEach(id=>{const L=D.filter(d=>(d.g.v||"")===id);if(!L.length)return;const v=C().vendors.find(x=>x.id===id);t+=`\n■ ${id?vn(id)+(v.phone?" "+v.phone:""):"未指派廠商"}\n`;L.forEach((d,n)=>t+=`  ${n+1}. ${line(d)}\n`)})}
+  else{t+="\n";D.forEach((d,n)=>t+=`  ${n+1}. ${line(d)}${d.g.v?"〔"+vn(d.g.v)+"〕":""}\n`)}
+  show(m==="v"?"廠商派工單":"複驗清單",t,"全選後複製，可貼給建商、廠商或客服（照片不含在文字內）。")}
+
+let SV=null;
+const vid=d=>C().vendors.some(v=>v.id===d.g.v)?d.g.v:"-";
+function sheet(){const V=C().vendors,all=defects(),ids=[...V.map(v=>v.id),"-"];
+  if(SV&&ids.includes(SV))return sheetDoc(SV,all);
+  const rows=ids.map(id=>{const L=all.filter(d=>vid(d)===id),c=[0,0,0,0];L.forEach(d=>c[d.g.s||0]++);return{id,L,c}}).filter(r=>r.L.length||r.id!=="-");
+  return `<div class="card"><h2>廠商缺失匯總</h2>${all.length?`<div class="scroll"><table><tr><th>廠商</th><th>缺失</th>${ST.map(s=>`<th>${s}</th>`).join("")}<th></th></tr>${rows.map(r=>`<tr><td>${esc(r.id==="-"?"未指派":vn(r.id))}</td><td>${r.L.length}</td>${r.c.map(x=>`<td>${x}</td>`).join("")}<td><button class="btn" onclick="openSheet('${r.id}')" ${r.L.length-r.c[3]?"":"disabled"}>開立缺失單</button></td></tr>`).join("")}</table></div>`:`<div class="empty">尚無缺失</div>`}
+  <p class="note">缺失單只列出尚未通過複驗的項目。未指派的缺失請先在「缺失」分頁指派廠商。</p></div>`}
+function openSheet(id){const V=C().vendors,t=new Date().toISOString().slice(0,10),i=C().info,x=Math.max(V.findIndex(v=>v.id===id)+1,0);
+  C().sheets[id]=Object.assign({no:"DF-"+t.replace(/-/g,"")+"-"+String(x).padStart(2,"0"),date:t,due:(openItems(id).map(d=>d.g.due).filter(Boolean).sort()[0]||""),memo:""},C().sheets[id]||{});save();SV=id;render()}
+function openItems(id){return defects().filter(d=>vid(d)===id&&(d.g.s||0)<3)}
+function sheetDoc(id,all){const i=C().info,v=C().vendors.find(x=>x.id===id),L=openItems(id),m=C().sheets[id]||{};
+  const sv=k=>`C().sheets['${id}'].${k}=this.value;save()`;
+  return `<div class="tools noprint"><button class="btn g" onclick="SV=null;render()">← 返回匯總</button><button class="btn" onclick="prt()">列印／存成 PDF</button><button class="btn g" onclick="sheetTxt('${id}')">複製文字</button></div>
+  <div class="card" id="sdoc"><h2 style="text-align:center;font-size:20px">缺失改善通知單</h2>
+  <table class="bd"><tr><th>戶別／樓層</th><td colspan="3">${esc(cname(C()))}</td></tr>
+    <tr><th>責任廠商</th><td>${id==="-"?"未指派":esc(vn(id))}</td><th>聯絡電話</th><td>${esc(v?v.phone:"")}</td></tr>
+  <tr><th>單號</th><td><input value="${esc(m.no)}" onchange="${sv("no")}"></td><th>開立日期</th><td><input type="date" value="${esc(m.date)}" onchange="${sv("date")}"></td></tr>
+  <tr><th>要求完成日</th><td><input type="date" value="${esc(m.due)}" onchange="${sv("due")}"></td><th>備註</th><td><input value="${esc(m.memo)}" onchange="${sv("memo")}"></td></tr></table>
+  <h3>缺失項目（${L.length} 項）</h3><div class="scroll"><table class="bd"><tr><th>#</th><th>戶別／樓層</th><th>缺失描述</th><th>查核日期</th><th>改善期限</th><th>照片</th><th>狀態</th></tr>
+  ${L.map((d,n)=>`<tr><td>${n+1}</td><td>${esc(locL(d))}</td><td>${esc(d.g.t)}${d.g.n?`<br><span class="note">${esc(d.g.n)}</span>`:""}</td><td>${esc(d.g.cd||"")}</td><td>${esc(d.g.due||"")}</td><td>${(d.g.p||[]).map(p=>P[p]?`<img class="th" alt="缺失照片" src="${P[p]}">`:"").join("")}</td><td>${ST[d.g.s||0]}</td></tr>`).join("")}</table></div>
+  <p class="note">請於要求完成日前完成改善，並通知驗收。</p>
+  <div class="sg"><div>開立人</div><div>廠商簽收</div><div>驗收人</div></div></div>
+  <p class="note noprint">列印沒有反應時（部分預覽環境會擋），請用「複製文字」，或在已發布的頁面開啟後再列印。</p>`}
+function prt(){try{window.print()}catch(e){tip("此環境無法直接列印，請改用「複製文字」")}}
+function sheetTxt(id){const i=C().info,m=C().sheets[id]||{},L=openItems(id);
+  let t=`【缺失改善通知單】${m.no||""}\n案件：${cname(C())}\n責任廠商：${id==="-"?"未指派":vn(id)}\n開立日期：${m.date||"—"}　要求完成日：${m.due||"—"}\n`;
+  L.forEach((d,n)=>t+=`\n${n+1}. ${locL(d)?"["+locL(d)+"] ":""}${d.g.t||"—"}${d.g.due?"〔期限 "+d.g.due+(od(d)?" 逾期":soon(d)?" 即將到期":"")+"〕":""}［${ST[d.g.s||0]}］${d.g.n?"（"+d.g.n+"）":""}${(d.g.p||[]).length?"［照片"+d.g.p.length+"張］":""}`);
+  show("缺失單文字",t,"全選後複製。照片請另以列印／PDF 附上。")}
+
+// 多案件彙整
+let X={},VL=[];
+function withCase(id,fn){const o=S.cur;S.cur=id;try{return fn()}finally{S.cur=o}}
+const fl=f=>/^\d+$/.test(f)?f+"F":f;
+const cname=c=>[c.info.unit,fl(c.info.floor||"")].filter(Boolean).join(" ")||"未命名案件";
+function aggAll(){return Object.values(S.cases).map(c=>withCase(c.id,()=>{const st=stats(),D=defects().map(d=>{const v=C().vendors.find(x=>x.id===d.g.v);return{u:d.u,f:d.f,loc:locL(d),due:d.g.due||"",t:d.g.t||"",n:d.g.n||"",s:d.g.s||0,v:v?(v.name||"未命名廠商"):"未指派"}});return{c,st,D}}))}
+let GM="open";
+let GC=[];
+function goCell(i){const m=GC[i];S.cur=m.id;F.u=m.u||"-";F.f=m.f||"-";F.s="";F.v="";tab="def";save();render()}
+function gridCard(R){if(!R.length)return "";const M={};
+  const add=(u,f,id)=>{const k=u+"\u0001"+f;return M[k]=M[k]||{u,f,id,all:0,open:0}};
+  R.forEach(r=>{add(r.c.info.unit||"",r.c.info.floor||"",r.c.id);r.D.forEach(d=>{const m=add(d.u||"",d.f||"",r.c.id);m.all++;if(d.s<3)m.open++})});
+  GC=Object.values(M);
+  const U=[...new Set(GC.map(m=>m.u))].sort((a,b)=>a.localeCompare(b,"zh-Hant",{numeric:true})),Fl=[...new Set(GC.map(m=>m.f))].sort((a,b)=>(parseFloat(b)||-1)-(parseFloat(a)||-1));
+  const val=m=>GM==="all"?m.all:GM==="pct"?(m.all?Math.round((m.all-m.open)/m.all*100)+"%":"—"):m.open;
+  const cell=m=>`<button class="${!m.all?"c0":m.open?"c1":"c2"}" onclick="goCell(${GC.indexOf(m)})">${val(m)}</button>`;
+  return `<div class="card"><h2>戶別 × 樓層</h2><div class="tools"><select aria-label="顯示指標" onchange="GM=this.value;render()"><option value="open" ${GM==="open"?"selected":""}>待處理缺失數</option><option value="all" ${GM==="all"?"selected":""}>缺失總數</option><option value="pct" ${GM==="pct"?"selected":""}>複驗通過率</option></select></div>
+  <div class="scroll"><table class="gx"><tr><th>樓層＼戶別</th>${U.map(u=>`<th>${esc(u||"未選擇")}</th>`).join("")}</tr>
+  ${Fl.map(f=>`<tr><th>${esc(f?fl(f):"未選擇")}</th>${U.map(u=>`<td>${GC.filter(m=>m.u===u&&m.f===f).map(cell).join("")}</td>`).join("")}</tr>`).join("")}</table></div>
+  <p class="note">依每筆缺失所選的戶別與樓層統計，橫向為戶別，縱向為樓層（高樓層在上）。灰＝無缺失，橘＝有待處理缺失，綠＝缺失皆已複驗通過。點格子可到「缺失」分頁看明細。</p></div>`}
+function agg(){const R=aggAll(),all=Object.values(S.cases),T=[0,0,0,0],vm={},cm={},im={};let tot=0,done=0;
+  const rows=R.map(r=>{const cn=[0,0,0,0];r.D.forEach(d=>{cn[d.s]++;T[d.s]++;(vm[d.v]=vm[d.v]||{cs:new Set(),n:0,open:0,ok:0});const m=vm[d.v];m.cs.add(r.c.id);m.n++;d.s<3?m.open++:m.ok++;cm[d.cat]=(cm[d.cat]||0)+1;im[d.item]=(im[d.item]||0)+1});tot+=r.st.tot;done+=r.st.done;
+    return `<tr><td>${esc(cname(r.c))}</td><td>${r.D.length}</td><td>${cn[0]}</td><td>${cn[1]}</td><td>${cn[2]}</td><td>${cn[3]}</td><td><button class="btn g" onclick="S.cur='${r.c.id}';save();ca=null;tab='sum';render()">開啟</button></td></tr>`}).join("");
+  const nd=T.reduce((a,b)=>a+b,0);VL=Object.keys(vm).sort((a,b)=>vm[b].open-vm[a].open);
+  const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  return `<div class="card"><h2>彙整總覽</h2><p class="note">已彙整全部 ${R.length} 個案件。新案件請到「案件」分頁建立。</p>
+  <div class="grid"><div class="stat"><b>${R.length}</b><span>案件數</span></div><div class="stat"><b style="color:var(--bad)">${R.reduce((a,r)=>a+r.D.filter(d=>d.due&&d.due<ymd(new Date())&&d.s<3).length,0)}</b><span>逾期</span></div><div class="stat"><b style="color:var(--warn)">${R.reduce((a,r)=>a+r.D.filter(d=>d.due&&d.s<3&&d.due>=ymd(new Date())&&d.due<=plusN(ymd(new Date()),SD())).length,0)}</b><span>即將到期</span></div><div class="stat"><b style="color:var(--bad)">${nd}</b><span>缺失總數</span></div><div class="stat"><b>${nd-T[3]}</b><span>尚未通過複驗</span></div><div class="stat"><b style="color:var(--ok)">${nd?Math.round(T[3]/nd*100):0}%</b><span>複驗通過率</span></div></div>
+  <div class="tools" style="margin-top:12px"><button class="btn" onclick="aggTxt()">匯出彙整報告文字</button></div></div>
+  ${gridCard(R)}<div class="card"><h2>案件總表</h2>${R.length?`<div class="scroll"><table><tr><th>案件</th><th>缺失</th>${ST.map(x=>`<th>${x}</th>`).join("")}<th></th></tr>${rows}<tr><th>合計</th><th>${nd}</th>${T.map(x=>`<th>${x}</th>`).join("")}<th></th></tr></table></div>`:`<div class="empty">請至少納入一個案件</div>`}</div>
+  <div class="card"><h2>廠商跨案件匯總</h2>${VL.length?`<div class="scroll"><table><tr><th>廠商</th><th>涉及案件</th><th>缺失</th><th>待處理</th><th>已通過</th><th></th></tr>${VL.map((n,i)=>`<tr><td>${esc(n)}</td><td>${vm[n].cs.size}</td><td>${vm[n].n}</td><td class="${vm[n].open?"warn":""}">${vm[n].open}</td><td>${vm[n].ok}</td><td><button class="btn g" onclick="vTxt(${i})">明細文字</button></td></tr>`).join("")}</table></div><p class="note">以廠商名稱合併不同案件的同名廠商，請保持各案件的廠商名稱一致。</p>`:`<div class="empty">尚無缺失</div>`}</div>
+  `}
+function vTxt(i){const n=VL[i];let t=`【${n} 跨案件待處理缺失】\n`;
+  aggAll().forEach(r=>{const L=r.D.filter(d=>d.v===n&&d.s<3);if(!L.length)return;t+=`\n■ ${cname(r.c)}\n`;L.forEach((d,k)=>t+=`  ${k+1}. ${d.loc?"["+d.loc+"] ":""}${d.t||"—"}${d.due?"〔期限 "+d.due+"〕":""}［${ST[d.s]}］${d.n?"（"+d.n+"）":""}\n`)});
+  show(n+" 明細",t,"全選後複製。")}
+function aggTxt(){const R=aggAll();let t=`【多案件驗屋彙整報告】共 ${R.length} 個案件\n`;
+  R.forEach(r=>{const cn=[0,0,0,0];r.D.forEach(d=>cn[d.s]++);t+=`\n■ ${cname(r.c)}\n  缺失 ${r.D.length}　`+ST.map((x,i)=>x+cn[i]).join(" ")+"\n"});
+  show("彙整報告",t,"全選後複製。")}
+
+
+// 匯出到 Google Sheet（搭配 Apps Script）
+function buildPayload(){const o={v:2,at:new Date().toISOString(),cases:[],items:[],vendors:[]};
+  Object.values(S.cases).forEach(c=>withCase(c.id,()=>{const i=c.info,D=defects(),row={id:c.id,name:cname(c),unit:i.unit||"",floor:i.floor||"",defects:D.length,open:D.filter(d=>(d.g.s||0)<3).length};
+    D.forEach(d=>{const v=C().vendors.find(x=>x.id===d.g.v);o.items.push({caseId:c.id,case:row.name,unit:d.u,floor:d.f,desc:d.g.t||"",checkDate:d.g.cd||"",due:d.g.due||"",status:ST[d.g.s||0],vendor:v?(v.name||"未命名廠商"):"",note:d.g.n||"",photos:(d.g.p||[]).length})});
+    o.cases.push(row);c.vendors.forEach(v=>o.vendors.push({case:row.name,name:v.name,trade:v.trade,phone:v.phone}))}));
+  return o}
+function gsExport(){show("Google Sheet 匯出資料",JSON.stringify(buildPayload()),"全選複製，到 Google Sheet 選單「驗屋工具 → 貼上匯入資料」貼上。")}
+async function gsPost(){const u=(S.gs||"").trim();if(!u)return tip("請先填 Apps Script 網址");
+  try{await fetch(u,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(buildPayload())});tip("已送出，請到試算表確認是否更新")}catch(e){tip("此頁面環境不允許連外，請改用「產生匯出資料」複製貼上")}}
+function gsCard(){return `<div class="card"><h2>匯出到 Google Sheet</h2>
+  <p class="note">匯出內容含全部案件的案件總表、缺失明細、廠商匯總、戶別×樓層表。照片只匯出張數。Apps Script 程式碼請見對話中提供的 Code.gs。</p>
+  <div class="tools"><button class="btn" onclick="gsExport()">產生匯出資料（複製貼上）</button></div>
+  <div class="f"><div><label>Apps Script 網頁應用程式網址（選填，直接上傳用）</label><input placeholder="https://script.google.com/macros/s/…/exec" value="${esc(S.gs||"")}" onchange="S.gs=this.value.trim();save()"></div></div>
+  <button class="btn g" onclick="gsPost()">直接上傳</button>
+  <p class="note">「直接上傳」需要頁面允許連外；在 Claude 發布的頁面會被擋，請改用複製貼上。</p></div>`}
+
+const LK={units:"unit",floors:"floor"};
+function srt(){S.units.sort((a,b)=>a.localeCompare(b,"zh-Hant",{numeric:true}));S.floors.sort((a,b)=>(parseFloat(b)||-1)-(parseFloat(a)||-1))}
+function ensureLists(){S.units=S.units||[];S.floors=S.floors||[];Object.values(S.cases).forEach(c=>{const u=c.info.unit,f=c.info.floor;if(u&&!S.units.includes(u))S.units.push(u);if(f&&!S.floors.includes(f))S.floors.push(f)});srt();save()}
+function setLoc(k,v){C().info[k]=v;save();render()}
+function renLoc(L,n,v){v=v.trim();const o=S[L][n];if(!v){tip("名稱不可空白");return render()}if(v===o)return;if(S[L].includes(v)){tip("名稱已存在");return render()}
+  S[L][n]=v;Object.values(S.cases).forEach(c=>{if(c.info[LK[L]]===o)c.info[LK[L]]=v});srt();save();render()}
+function delLoc(L,n){const o=S[L][n],k=Object.values(S.cases).filter(c=>c.info[LK[L]]===o).length;
+  ask(k?`刪除「${o}」？有 ${k} 個案件使用，刪除後這些案件會變成未選擇。`:`刪除「${o}」？`,()=>{S[L].splice(n,1);Object.values(S.cases).forEach(c=>{if(c.info[LK[L]]===o)c.info[LK[L]]=""});save();render()})}
+function addLoc(L,id){const v=$(id).value.trim();if(!v)return tip("請輸入名稱");if(S[L].includes(v))return tip("名稱已存在");S[L].push(v);srt();save();render()}
+function addFloors(){const a=parseInt($("f1").value),b=parseInt($("f2").value);if(isNaN(a)||isNaN(b)||Math.abs(b-a)>80)return tip("請輸入有效的起訖樓層");
+  for(let x=Math.min(a,b);x<=Math.max(a,b);x++){const v=String(x);if(!S.floors.includes(v))S.floors.push(v)}srt();save();render()}
+function cse(){const c=C(),i=c.info,F2=[["unit","戶別"],["floor","樓層"]];
+  return `<div class="card"><h2>此案件的戶別／樓層</h2><div class="f">
+  <div><label>戶別</label><select onchange="setLoc('unit',this.value)"><option value="">未選擇</option>${S.units.map(u=>`<option value="${esc(u)}" ${i.unit===u?"selected":""}>${esc(u)}</option>`).join("")}</select></div>
+  <div><label>樓層</label><select onchange="setLoc('floor',this.value)"><option value="">未選擇</option>${S.floors.map(u=>`<option value="${esc(u)}" ${i.floor===u?"selected":""}>${esc(fl(u))}</option>`).join("")}</select></div></div>
+  <p class="note">選項請在下方清單新增、修改或刪除。</p></div>
+  <div class="card"><h2>戶別／樓層清單</h2>
+  ${[["units","戶別","nu"],["floors","樓層","nf"]].map(([L,t,id])=>`<h3>${t}</h3>${S[L].map((x,n)=>`<div class="det"><input aria-label="${t}名稱" value="${esc(x)}" onchange="renLoc('${L}',${n},this.value)"><span class="note" style="align-self:center;min-width:56px">${Object.values(S.cases).filter(c=>c.info[LK[L]]===x).length} 案件</span><button class="btn r" onclick="delLoc('${L}',${n})">刪除</button></div>`).join("")||`<p class="note">尚無${t}</p>`}<div class="det" style="margin-top:6px"><input id="${id}" placeholder="新增${t}（例如 ${L==="units"?"A1":"6"}）"><button class="btn" onclick="addLoc('${L}','${id}')">新增</button></div>`).join("")}
+  <div class="det" style="margin-top:10px"><input id="f1" type="number" placeholder="起始樓層"><input id="f2" type="number" placeholder="結束樓層"><button class="btn g" onclick="addFloors()">批次新增樓層</button></div>
+  <p class="note">改名會同步到所有使用它的案件；刪除後使用它的案件會變成「未選擇」。</p></div>
+  <div class="card"><h2>提醒設定</h2><div class="det"><span class="note" style="align-self:center">改善期限前</span><input type="number" min="1" max="60" aria-label="提醒天數" style="flex:0 0 80px;min-width:0" value="${SD()}" onchange="setSD(this.value)"><span class="note" style="align-self:center">天內標示「即將到期」</span>${[1,3,5,7].map(n=>`<button class="btn ${SD()===n?"":"g"}" onclick="setSD(${n})">${n} 天</button>`).join("")}</div></div>
+  <div class="card"><h2>責任廠商</h2><p class="note">建立廠商名單後，可在缺失中指派責任廠商，並依廠商產生派工單。</p>${c.vendors.map((v,n)=>`<div class="det"><input placeholder="廠商名稱" value="${esc(v.name)}" onchange="C().vendors[${n}].name=this.value;save()"><input placeholder="工種（泥作、水電…）" value="${esc(v.trade)}" onchange="C().vendors[${n}].trade=this.value;save()"><input placeholder="聯絡電話" value="${esc(v.phone)}" onchange="C().vendors[${n}].phone=this.value;save()"><button class="btn r" onclick="C().vendors.splice(${n},1);save();render()">刪除</button></div>`).join("")}<div class="tools" style="margin-top:10px"><button class="btn g" onclick="C().vendors.push({id:'v'+Date.now(),name:'',trade:'',phone:''});save();render()">＋新增廠商</button></div></div>
+  <div class="card"><h2>案件管理</h2><div class="tools"><select onchange="S.cur=this.value;save();ca=null;render()">${Object.values(S.cases).map(x=>`<option value="${x.id}" ${x.id===S.cur?"selected":""}>${esc(cname(x))}</option>`).join("")}</select>
+  <button class="btn" onclick="newCase();ca=null;render()">＋新案件</button><button class="btn r" onclick="delC()">刪除此案件</button></div>
+  <div class="tools"><button class="btn g" onclick="show('備份資料',JSON.stringify(S),'複製保存；換裝置時貼回「匯入」。')">匯出備份</button><button class="btn g" onclick="show('匯入備份','','貼上備份內容後按匯入，會覆蓋目前所有案件。',1)">匯入備份</button></div>
+  <p class="note">資料只存在這個瀏覽器，不會上傳。照片存在瀏覽器另一區，不含在備份內。清除瀏覽器資料前請先匯出備份。</p></div>${gsCard()}`}
+function delC(){ask("確定刪除此案件與所有紀錄？",()=>{delete S.cases[S.cur];S.cur=Object.keys(S.cases)[0]||null;if(!S.cur)newCase();save();ca=null;render()})}
+function doImport(){try{const o=JSON.parse($("ta").value);if(!o.cases)throw 0;S=o;ensureLists();if(!S.cases[S.cur])S.cur=Object.keys(S.cases)[0];save();dlg.close();render()}catch(e){tip("備份格式不正確")}}
+
+function render(){nav();$("view").innerHTML={sum,def,sheet,agg,case:cse}[tab]()}
+Object.values(S.cases).forEach(migrate);
+ensureLists();
+initDB(render);
+</script>
+</body>
+</html>
